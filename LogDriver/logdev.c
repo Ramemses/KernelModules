@@ -10,7 +10,6 @@
 #include <linux/err.h>
 #include <linux/jiffies.h>
 
-
 #define DEVICE_FIRST 0
 #define DEVICE_COUNT 1
 #define DGROUP_NAME "my-log-interface"
@@ -164,12 +163,17 @@ static void __exit log_exit(void){
 
 }
 
+#define BUF_SIZE 1000
+static char buff[BUF_SIZE];
+
 
 static int handle_openfile(struct fsnotify_group *group, u32 mask, 
                             const void *data, int data_type, struct inode *inode,
                             const struct qstr *name, u32 cookie,
                             struct fsnotify_iter_info *iter_info)
 {
+		
+	int n = 0;
 	unsigned long current_jiffies = jiffies;
     unsigned long debounce_interval = msecs_to_jiffies(DEBOUNCE_INTERVAL_MS);
 
@@ -177,6 +181,22 @@ static int handle_openfile(struct fsnotify_group *group, u32 mask,
         if (time_after(current_jiffies, last_event_jiffies + debounce_interval)) {
             printk(KERN_INFO "<logdev>: File %s was written and closed\n", filename);
             last_event_jiffies = current_jiffies;
+
+
+			struct file *f;
+			f = filp_open(filename, O_RDONLY, 0);
+			
+    		n = kernel_read(f, buff, BUF_SIZE, 0); 
+    		if(n) { 
+    		    printk(KERN_ERR "<logdev>: read first %d bytes:\n", n ); 
+       			buff[n] = '\0'; 
+        		printk("%s\n", buff);; 
+    		} else { 
+        		printk(KERN_ERR  "<logdev>: kernel_read failed\n" ); 
+        		return -EIO; 
+    		}
+
+ 			filp_close(f, NULL);
         }    
     }
 
