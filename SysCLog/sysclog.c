@@ -9,7 +9,7 @@
 
 #define DEVICE_FIRST 0
 #define DEVICE_COUNT 1
-#define DGROUP_NAME "systemcalls logging device"
+#define DGROUP_NAME "gpio device"
 #define DEVICE_NAME "syslog"
 
 #define DEVICE_OPENED 1
@@ -29,6 +29,7 @@ static void __exit syslog_exit(void);
 static int syslog_open(struct inode* n, struct file *f);
 static int syslog_release(struct inode *n, struct file *f);
 static ssize_t syslog_read(struct file *f, char __user *buffer, size_t count, loff_t *ppos);
+
 
 static const struct file_operations syslog_fops ={
 	.owner = THIS_MODULE,

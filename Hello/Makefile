@@ -15,7 +15,7 @@ all:
 clean: 
 	rm -f *.ko *.cmd .*.cmd *.mod .*.mod *.mod.* *.o .*.o *.order *.symvers
 install:
-	sudo insmod $(TRAGET).ko
+	sudo insmod $(TARGET).ko
 
 uninstall:
 	sudo rmmod $(TARGET)
